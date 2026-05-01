@@ -14,9 +14,12 @@ export default function (pi: ExtensionAPI) {
 		const theme = ctx.ui.theme;
 		
 		try {
-			// 1. Check if it's a git repo by running a basic command
+			// Debug: log the result of the first command to a file to see the structure
 			const repoCheck = await pi.exec("git", ["rev-parse", "--is-inside-work-tree"]);
-			if (repoCheck.exitCode !== 0) {
+			
+			// If the user sees "git: ∅", it means we entered this block.
+			// Let's check if the exitCode is actually what we think it is.
+			if (repoCheck.exitCode !== 0 && repoCheck.stdout.trim() !== "true") {
 				ctx.ui.setStatus("git", theme.fg("dim", "git: ∅"));
 				return;
 			}
