@@ -14,20 +14,35 @@ export default function (pi: ExtensionAPI) {
 		const theme = ctx.ui.theme;
 		
 		try {
-			// 1. Check if it's a git repo
-			const isRepo = await pi.exec("git", ["rev-parse", "--is-inside-work-tree"]);
-			if (isRepo.exitCode !== 0) {
+			// 1. Check if it's a git repo by running a basic command
+			const repoCheck = await pi.exec("git", ["rev-parse", "--is-inside-work-tree"]);
+			if (repoCheck.exitCode !== 0) {
 				ctx.ui.setStatus("git", theme.fg("dim", "git: ∅"));
 				return;
 			}
 
 			// 2. Get Branch / HEAD state
-			const branchRes = await pi.exec("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+			// Try symbolic-ref first (works for branches), fallback to rev-parse
 			let branchText = "";
-			if (branchRes.exitCode !== 0 || branchRes.stdout.trim() === "HEAD") {
-				branchText = theme.fg("warning", "⚠ detached");
-			} else {
+			const branchRes = await pi.exec("git", ["symbolic-ref", "--short", "HEAD"]);
+			
+			if (branchRes.exitCode === 0) {
 				branchText = theme.fg("accent", ` ${branchRes.stdout.trim()}`);
+			} else {
+				// Check if detached or just empty repo
+				const revParseRes = await pi.exec("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+				if (revParseRes.exitCode === 0 && revParseRes.stdout.trim() === "HEAD") {
+					branchText = theme.fg("warning", "⚠ detached");
+				} else if (revParseRes.exitCode !== 0) {
+					// Likely an empty repo (no commits yet)
+					const branchNameRes = await pi.exec("git", ["branch", "--show-current"]);
+					const name = branchNameRes.stdout.trim();
+					branchText = name 
+						? theme.fg("accent", ` ${name}`) 
+						: theme.fg("dim", " empty");
+				} else {
+					branchText = theme.fg("accent", ` ${revParseRes.stdout.trim()}`);
+				}
 			}
 
 			// 3. Parse File Status
