@@ -10,6 +10,7 @@ import { createLocalBashOperations } from "@mariozechner/pi-coding-agent";
 
 export default function (pi: ExtensionAPI) {
 	let refreshInterval: NodeJS.Timeout | null = null;
+	let currentCtx: any = null;
 
 	async function updateGitStatus(ctx: any) {
 		const theme = ctx.ui.theme;
@@ -106,19 +107,15 @@ export default function (pi: ExtensionAPI) {
 	}
 
 	pi.on("session_start", async (_event, ctx) => {
+		currentCtx = ctx;
 		await updateGitStatus(ctx);
 
 		// Set up periodic refresh (every 10 seconds)
 		if (refreshInterval) clearInterval(refreshInterval);
 		refreshInterval = setInterval(() => {
-			// We can't easily get the current 'ctx' inside a setInterval 
-			// without storing it or having a way to access the current session context.
-			// However, pi provides event handlers. 
-			// Since setInterval is outside the event loop, we need to be careful.
-			// Actually, a better way is to use a tool_execution_end or turn_end trigger
-			// and perhaps a timer that triggers a notification or similar.
-			// But the most reliable way in Pi is to trigger on events.
-			// To implement periodic refresh, we'd need access to the current active context.
+			if (currentCtx) {
+				updateGitStatus(currentCtx);
+			}
 		}, 10000);
 	});
 
@@ -145,6 +142,7 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.on("session_shutdown", () => {
+		currentCtx = null;
 		if (refreshInterval) {
 			clearInterval(refreshInterval);
 			refreshInterval = null;
