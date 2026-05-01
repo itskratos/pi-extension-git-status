@@ -7,6 +7,9 @@ Customize the pi status line (footer) to display detailed real-time git reposito
 - **Branch Name**: The current active git branch (e.g., ` main`).
 - **Detached HEAD**: If in a detached HEAD state, shows `⚠ detached`.
 - **No Repository**: If not in a git repo, shows `git: ∅`.
+- **Overall Status**: 
+    - `✓` (Success color) if the repository is clean.
+    - `✗` (Warning color) if the repository is dirty (any staged, unstaged, or untracked changes).
 - **File Change Counts**:
     - **Staged**: Number of files in the staging area (e.g., `+:3`).
     - **Unstaged**: Number of modified or deleted files that have not yet been staged (e.g., `!:2`).
@@ -14,7 +17,7 @@ Customize the pi status line (footer) to display detailed real-time git reposito
 - **Origin Sync Status**:
     - **Ahead**: Number of commits ahead of origin (e.g., `↑ 2`).
     - **Behind**: Number of commits behind origin (e.g., `↓ 1`).
-- **Final Format**: `git:  main [+:3 !:2 ?:1] ↑2 ↓1`
+- **Final Format**: `git: [✓/✗]  main [+:3 !:2 ?:1] ↑2 ↓1`
 
 ## 2. Trigger Events
 The status updates automatically during:
@@ -31,6 +34,7 @@ The status updates automatically during:
         - Primary: `git symbolic-ref --short HEAD`.
         - Detached check: `git rev-parse --abbrev-ref HEAD`.
         - Fallback: `git branch --show-current`.
+    - **Overall Status**: Calculated as `isDirty = staged > 0 || unstaged > 0 || untracked > 0`.
     - **File Status**: `git status --porcelain`
         - **Staged (`+`)**: 1st column has a change indicator (`M`, `A`, `D`, `R`, `C`).
         - **Unstaged (`!`)**: 2nd column has `M` or `D`.
