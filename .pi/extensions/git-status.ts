@@ -6,6 +6,7 @@
  */
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { createLocalBashOperations } from "@mariozechner/pi-coding-agent";
 
 export default function (pi: ExtensionAPI) {
 	let refreshInterval: NodeJS.Timeout | null = null;
@@ -127,6 +128,20 @@ export default function (pi: ExtensionAPI) {
 
 	pi.on("turn_end", async (_event, ctx) => {
 		await updateGitStatus(ctx);
+	});
+
+	pi.on("user_bash", (_event, ctx) => {
+		const local = createLocalBashOperations();
+		return {
+			operations: {
+				async exec(command, cwd, options) {
+					const result = await local.exec(command, cwd, options);
+					// Update status after the user's bash command finishes
+					updateGitStatus(ctx);
+					return result;
+				},
+			},
+		};
 	});
 
 	pi.on("session_shutdown", () => {
