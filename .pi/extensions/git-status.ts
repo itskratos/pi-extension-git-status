@@ -54,11 +54,17 @@ export default function (pi: ExtensionAPI) {
 			let unstaged = 0;
 			let untracked = 0;
 
-			if (statusRes.exitCode === 0) {
-				const lines = statusRes.stdout.split("\n").filter(l => l.length > 0);
+			if (statusRes.stdout) {
+				const lines = statusRes.stdout.split("\n").filter(l => l.trim().length > 0);
 				for (const line of lines) {
 					const x = line[0];
 					const y = line[1];
+
+					// Untracked: starts with ??
+					if (line.startsWith("??")) {
+						untracked++;
+						continue; // Move to next line
+					}
 
 					// Staged: 1st column has a change indicator (M, A, D, R, C)
 					if (x !== " " && x !== "?") {
@@ -67,10 +73,6 @@ export default function (pi: ExtensionAPI) {
 					// Unstaged: 2nd column has M or D
 					if (y === "M" || y === "D") {
 						unstaged++;
-					}
-					// Untracked: starts with ??
-					if (line.startsWith("??")) {
-						untracked++;
 					}
 				}
 			}
