@@ -5,6 +5,7 @@ Customize the pi status line (footer) to display detailed real-time git reposito
 
 ## 1. Information to Display
 - **Branch Name**: The current active git branch (e.g., ` main`).
+    - **Detached HEAD**: If in a detached HEAD state, show a warning (e.g., `⚠ detached`).
 - **File Change Counts**:
     - **Staged**: Number of files in the staging area (e.g., `+:3`).
     - **Unstaged**: Number of modified or deleted files that have not yet been staged (e.g., `!:2`).
@@ -12,7 +13,7 @@ Customize the pi status line (footer) to display detailed real-time git reposito
 - **Origin Sync Status**:
     - **Ahead**: Number of commits ahead of origin (e.g., `↑ 2`).
     - **Behind**: Number of commits behind origin (e.g., `↓ 1`).
-- **Proposed Format**: `git:  main [+:3 !:2 ?:1] ↑2 ↓1` (Colors used for distinct sections).
+- **Proposed Format**: `git:  main [+:3 !:2 ?:1] ↑2 ↓1` or `git: ⚠ detached [+:3 !:2 ?:1] ↑2 ↓1` (Colors used for distinct sections).
 
 ## 2. Trigger Events
 The status should be updated automatically during the following events:
@@ -23,7 +24,8 @@ The status should be updated automatically during the following events:
 
 ## 3. Implementation Logic
 - **Git State Retrieval**:
-    - **Branch**: `git rev-parse --abbrev-ref HEAD`
+    - **Branch/HEAD**: `git rev-parse --abbrev-ref HEAD`
+        - If the result is `HEAD`, the repository is in a detached HEAD state.
     - **File Status**: `git status --porcelain`
         - Parse the first two characters of each line to count:
             - **Staged (`+`)**: Line starts with `M`, `A`, `D`, `R`, `C` in the 1st column.
@@ -35,12 +37,12 @@ The status should be updated automatically during the following events:
 - **UI Integration**:
     - Use `ctx.ui.theme` to style the output:
         - `accent` for branch.
-        - `warning` for unstaged changes (`!`).
+        - `warning` for detached HEAD and unstaged changes (`!`).
         - `success` for staged files (`+`).
         - `dim` for untracked files (`?`) and sync status.
     - Use `ctx.ui.setStatus("git", statusText)` to push the information to the footer.
 - **Error Handling**:
-    - If the current directory is not a git repository, the status should be cleared or show a "no git" message.
+    - If the current directory is not a git repository, the status should show `git: ∅`.
     - Gracefully handle missing upstream branches for sync status.
 
 ## 4. Technical Details
