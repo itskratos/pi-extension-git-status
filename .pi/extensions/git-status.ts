@@ -86,6 +86,12 @@ export default function (pi: ExtensionAPI) {
 
 			const statsStr = fileStats.length > 0 ? ` [${fileStats.join(" ")}]` : "";
 
+			// Overall status indicator
+			const isDirty = staged > 0 || unstaged > 0 || untracked > 0;
+			const statusIndicator = isDirty 
+				? theme.fg("warning", "✗ ") 
+				: theme.fg("success", "✓ ");
+
 			// 4. Ahead/Behind origin
 			let syncStr = "";
 			const syncRes = await pi.exec("git", ["rev-list", "--left-right", "--count", "HEAD...@{u}"]);
@@ -98,7 +104,7 @@ export default function (pi: ExtensionAPI) {
 				if (b > 0) syncStr += theme.fg("dim", ` ↓${b}`);
 			}
 
-			ctx.ui.setStatus("git", `${theme.fg("dim", "git: ")}${branchText}${statsStr}${syncStr}`);
+			ctx.ui.setStatus("git", `${theme.fg("dim", "git: ")}${statusIndicator}${branchText}${statsStr}${syncStr}`);
 
 		} catch (e) {
 			// Fail silently to avoid disrupting the UI
