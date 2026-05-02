@@ -1,6 +1,9 @@
 /**
  * Git Status Extension
  * 
+ * Copyright (c) 2026 Aneesh Bhasin
+ * Licensed under the MIT License.
+ * 
  * Displays detailed git repository status in the pi footer.
  * Format: git:  branch [+:staged !:unstaged ?:untracked] ↑ahead ↓behind
  */

@@ -59,3 +59,7 @@ After installation, run the `/reload` command within pi or restart the agent. Yo
 - `install.sh`: Installation script for easy setup.
 - `.pi/extensions/git-status.ts`: The TypeScript source code for the extension.
 - `git-status-plan.md`: The detailed design and technical planning document.
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

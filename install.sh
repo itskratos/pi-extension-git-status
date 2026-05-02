@@ -1,4 +1,5 @@
 #!/bin/bash
+# Licensed under the MIT License
 
 # Configuration
 SOURCE_FILE=".pi/extensions/git-status.ts"
