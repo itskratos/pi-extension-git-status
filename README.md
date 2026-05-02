@@ -72,7 +72,7 @@ After installation, run the `/reload` command within pi or restart the agent. Yo
 | :--- | :--- |
 | [`install.sh`](install.sh) | Installation script for easy setup. |
 | [`git-status.ts`](.pi/extensions/git-status.ts) | The TypeScript source code for the extension. |
-| [`git-status-plan.md`](git-status-plan.md) | Detailed design and technical planning document. |
+| [`pi-extension-git-status-plan.md`](planning/pi-extension-git-status-plan.md) | Detailed design and technical planning document. |
 
 ## 📜 License
 
