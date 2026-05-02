@@ -21,15 +21,27 @@ A minimal extension for the [pi coding agent](https://pi.dev) that adds a detail
 
 ## 🛠️ Installation
 
-### Project-Local Installation
-To enable this extension for a specific project:
+### Quick Install
+Run the provided installation script:
+```bash
+chmod +x install.sh
+./install.sh
+```
+The script will guide you to install the extension either locally for the current project or globally for all pi sessions. You can also specify a custom path:
+```bash
+./install.sh /path/to/extensions
+```
+
+### Manual Installation
+If you prefer to install manually:
+
+**Project-Local**
 ```bash
 mkdir -p .pi/extensions
 cp .pi/extensions/git-status.ts .pi/extensions/
 ```
 
-### Global Installation
-To have the Git status line available across all your pi sessions:
+**Global**
 ```bash
 mkdir -p ~/.pi/agent/extensions
 cp .pi/extensions/git-status.ts ~/.pi/agent/extensions/
@@ -43,5 +55,6 @@ After installation, run the `/reload` command within pi or restart the agent. Yo
 
 ## 📂 Project Structure
 
+- `install.sh`: Installation script for easy setup.
 - `.pi/extensions/git-status.ts`: The TypeScript source code for the extension.
 - `git-status-plan.md`: The detailed design and technical planning document.
