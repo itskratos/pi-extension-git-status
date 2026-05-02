@@ -106,11 +106,15 @@ export default function (pi: ExtensionAPI) {
 
 			// 5. Last commit summary
 			let commitStr = "";
-			const commitRes = await pi.exec("git", ["log", "-1", "--pretty=format:%s"]);
+			const commitRes = await pi.exec("git", ["log", "-1", "--oneline"]);
 			if (commitRes.exitCode === 0 && commitRes.stdout.trim()) {
-				const msg = commitRes.stdout.trim();
-				const shortMsg = msg.length > 40 ? msg.slice(0, 37) + "..." : msg;
-				commitStr = theme.fg("dim", ` | 💬 ${shortMsg}`);
+				const line = commitRes.stdout.trim();
+				// --oneline format is: hash subject
+				const msg = line.substring(line.indexOf(" ") + 1).trim();
+				if (msg) {
+					const shortMsg = msg.length > 40 ? msg.slice(0, 37) + "..." : msg;
+					commitStr = theme.fg("dim", ` | 💬 ${shortMsg}`);
+				}
 			}
 
 			ctx.ui.setStatus("git", `${theme.fg("dim", "git: ")}${statusIndicator}${branchText}${statsStr}${syncStr}${commitStr}`);
