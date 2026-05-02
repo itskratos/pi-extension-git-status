@@ -17,7 +17,9 @@ Customize the pi status line (footer) to display detailed real-time git reposito
 - **Origin Sync Status**:
     - **Ahead**: Number of commits ahead of origin (e.g., `↑ 2`).
     - **Behind**: Number of commits behind origin (e.g., `↓ 1`).
-- **Final Format**: `git: [✓/✗]  main [+:3 !:2 ?:1] ↑2 ↓1`
+- **Last Commit Summary**:
+    - The subject line of the most recent commit, truncated to 40 characters (e.g., `| 💬 feat: add auth...`).
+- **Final Format**: `git: [✓/✗]  main [+:3 !:2 ?:1] ↑2 ↓1 | 💬 commit message...`
 
 ## 2. Trigger Events
 The status updates automatically during:
@@ -40,6 +42,7 @@ The status updates automatically during:
         - **Unstaged (`!`)**: 2nd column has `M` or `D`.
         - **Untracked (`?`)**: Line starts with `??`.
     - **Ahead/Behind**: `git rev-list --left-right --count HEAD...@{u}`.
+    - **Last Commit**: `git log -1 --oneline` (parsing the subject from the output).
 - **UI Integration**:
     - Uses `ctx.ui.theme` for semantic coloring:
         - `accent` for branch.

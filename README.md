@@ -11,6 +11,7 @@ A minimal extension for the [pi coding agent](https://pi.dev) that adds a detail
   - `?`: Number of untracked files.
 - **Visual Indicator**: A quick-glance `✓` (clean) or `✗` (dirty) mark to indicate if there are any uncommitted changes.
 - **Origin Sync**: Displays commit counts ahead (`↑`) or behind (`↓`) relative to the upstream origin.
+- **Last Commit**: Displays a truncated summary of the most recent commit message (e.g., `| 💬 feat: add auth...`).
 - **Automatic Updates**: The status line refreshes automatically on:
   - Session start/switch.
   - Tool executions (e.g., `edit`, `write`, `bash`).
@@ -51,7 +52,7 @@ cp .pi/extensions/git-status.ts ~/.pi/agent/extensions/
 
 After installation, run the `/reload` command within pi or restart the agent. You will see the status in the bottom footer:
 
-`git: ✓  main [+:2 !:1 ?:0] ↑1 ↓0`
+`git: ✓  main [+:2 !:1 ?:0] ↑1 ↓0 | 💬 feat: add authentication logic...`
 
 ## 📂 Project Structure
 
