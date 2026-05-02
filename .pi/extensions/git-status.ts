@@ -104,7 +104,16 @@ export default function (pi: ExtensionAPI) {
 				if (b > 0) syncStr += theme.fg("dim", ` ↓${b}`);
 			}
 
-			ctx.ui.setStatus("git", `${theme.fg("dim", "git: ")}${statusIndicator}${branchText}${statsStr}${syncStr}`);
+			// 5. Last commit summary
+			let commitStr = "";
+			const commitRes = await pi.exec("git", ["log", "-1", "--pretty=format:%s"]);
+			if (commitRes.exitCode === 0 && commitRes.stdout.trim()) {
+				const msg = commitRes.stdout.trim();
+				const shortMsg = msg.length > 40 ? msg.slice(0, 37) + "..." : msg;
+				commitStr = theme.fg("dim", ` | 💬 ${shortMsg}`);
+			}
+
+			ctx.ui.setStatus("git", `${theme.fg("dim", "git: ")}${statusIndicator}${branchText}${statsStr}${syncStr}${commitStr}`);
 
 		} catch (e) {
 			// Fail silently to avoid disrupting the UI
