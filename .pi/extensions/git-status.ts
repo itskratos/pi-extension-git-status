@@ -97,14 +97,19 @@ export default function (pi: ExtensionAPI) {
 
 			// 4. Ahead/Behind origin
 			let syncStr = "";
-			const syncRes = await pi.exec("git", ["rev-list", "--left-right", "--count", "HEAD...@{u}"]);
-			if (syncRes.exitCode === 0) {
-				const [ahead, behind] = syncRes.stdout.trim().split(/\s+/);
-				const a = parseInt(ahead, 10);
-				const b = parseInt(behind, 10);
-				
-				if (a > 0) syncStr += theme.fg("dim", ` ↑${a}`);
-				if (b > 0) syncStr += theme.fg("dim", ` ↓${b}`);
+			try {
+				const syncRes = await pi.exec("git", ["rev-list", "--left-right", "--count", "HEAD...@{u}"]);
+				if (syncRes.exitCode === 0) {
+					const [ahead, behind] = syncRes.stdout.trim().split(/\s+/);
+					const a = parseInt(ahead, 10);
+					const b = parseInt(behind, 10);
+					
+					if (a > 0) syncStr += theme.fg("success", ` ↑${a}`);
+					if (b > 0) syncStr += theme.fg("warning", ` ↓${b}`);
+				}
+			} catch (syncError) {
+				// Handle case where there's no upstream branch
+				console.debug("No upstream branch found");
 			}
 
 			// 5. Last commit summary
