@@ -5,6 +5,41 @@
 SOURCE_FILE=".pi/extensions/git-status.ts"
 DEFAULT_LOCAL_DIR=".pi/extensions"
 DEFAULT_GLOBAL_DIR="$HOME/.pi/agent/extensions"
+USE_LINK=false
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [OPTIONS] [TARGET_DIR]"
+    echo ""
+    echo "Options:"
+    echo "  --link       Create a symbolic link instead of copying the file"
+    echo "  --help       Display this help message"
+    echo ""
+    echo "If TARGET_DIR is not provided, you will be prompted to select an installation location."
+    exit 1
+}
+
+# Parse command line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --link)
+            USE_LINK=true
+            shift
+            ;;
+        --help|-h)
+            usage
+            ;;
+        *)
+            if [[ -z "$TARGET_DIR" ]]; then
+                TARGET_DIR="$1"
+            else
+                echo "Error: Too many arguments"
+                usage
+            fi
+            shift
+            ;;
+    esac
+done
 
 # Check if source file exists
 if [ ! -f "$SOURCE_FILE" ]; then
@@ -12,12 +47,8 @@ if [ ! -f "$SOURCE_FILE" ]; then
     exit 1
 fi
 
-TARGET_DIR=""
-
-# Handle argument
-if [ -n "$1" ]; then
-    TARGET_DIR="$1"
-else
+# If no target directory was provided, prompt user
+if [ -z "$TARGET_DIR" ]; then
     echo "Where would you like to install the pi skill?"
     echo "1) Project-Local ($DEFAULT_LOCAL_DIR)"
     echo "2) Global ($DEFAULT_GLOBAL_DIR)"
@@ -44,12 +75,24 @@ if [ -f "$TARGET_FILE" ]; then
     fi
 fi
 
-# Perform copy
-cp "$SOURCE_FILE" "$TARGET_FILE"
-
-if [ $? -eq 0 ]; then
-    echo "Successfully installed git-status.ts to $TARGET_DIR"
+# Perform installation
+if [ "$USE_LINK" = true ]; then
+    # Create symbolic link
+    ln -sf "$(pwd)/$SOURCE_FILE" "$TARGET_FILE"
+    if [ $? -eq 0 ]; then
+        echo "Successfully linked git-status.ts to $TARGET_FILE"
+    else
+        echo "Failed to link git-status.ts"
+        exit 1
+    fi
 else
-    echo "Failed to install git-status.ts"
-    exit 1
+    # Perform copy
+    cp "$SOURCE_FILE" "$TARGET_FILE"
+
+    if [ $? -eq 0 ]; then
+        echo "Successfully installed git-status.ts to $TARGET_DIR"
+    else
+        echo "Failed to install git-status.ts"
+        exit 1
+    fi
 fi
